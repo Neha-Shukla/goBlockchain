@@ -45,10 +45,15 @@
             data: JSON.stringify(transaction_data),
             success: function (response) {
               console.log(response);
+              if ($.parseJSON(response).message == "fail") {
+                alert("Failed");
+                return;
+              }
               alert("Send Success");
             },
             error: function (error) {
               console.log("Error", error);
+              alert("Failed");
             },
           });
         });
