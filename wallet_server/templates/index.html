@@ -13,18 +13,18 @@
             $("#public_key").val(response["public_key"]);
             $("#private_key").val(response["private_key"]);
             $("#blockchain_address").val(response["blockchain_address"]);
+            console.info(response);
           },
           error: function (error) {
-            console.log("Error", err);
+            console.error(error);
           },
         });
 
         $("#send_money_button").click(function () {
           let confirm_text = "Are you sure to send?";
-
           let confirm_result = confirm(confirm_text);
           if (confirm_result !== true) {
-            alert("Cancelled");
+            alert("Canceled");
             return;
           }
 
@@ -44,19 +44,38 @@
             contentType: "application/json",
             data: JSON.stringify(transaction_data),
             success: function (response) {
-              console.log(response);
-              if ($.parseJSON(response).message == "fail") {
-                alert("Failed");
-                return;
-              }
-              alert("Send Success");
+              console.info(response);
+              alert("Send success");
             },
-            error: function (error) {
-              console.log("Error", error);
-              alert("Failed");
+            error: function (response) {
+              console.error(response);
+              alert("Send failed");
             },
           });
         });
+
+        function reload_amount() {
+          let data = { blockchain_address: $("#blockchain_address").val() };
+          $.ajax({
+            url: "/wallet/amount",
+            type: "GET",
+            data: data,
+            success: function (response) {
+              let amount = response["amount"];
+              $("#wallet_amount").text(amount);
+              console.info(amount);
+            },
+            error: function (error) {
+              console.error(error);
+            },
+          });
+        }
+
+        $("#reload_wallet").click(function () {
+          reload_amount();
+        });
+
+        setInterval(reload_amount, 3000);
       });
     </script>
   </head>
